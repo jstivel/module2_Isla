@@ -1,6 +1,7 @@
 package around;
 
-import factory.Animal;
+import factory.*;
+import factory.plants.Plant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +12,9 @@ import java.util.concurrent.Future;
 public class Isla {
     private static Isla instanciaUnica;
     private List<Animal>[][] matriz;
+    private List<Plant>[][] matrizPlants;
     public Map<Animal, Future<?>> futures = new HashMap<>();
+    public Map<Plant, Future<?>> futurePlants = new HashMap<>();
     private int filas;
     private int columnas;
 
@@ -22,6 +25,12 @@ public class Isla {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 matriz[i][j] = new ArrayList<>();
+            }
+        }
+        this.matrizPlants= new ArrayList[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                matrizPlants[i][j] = new ArrayList<>();
             }
         }
     }
@@ -45,11 +54,26 @@ public class Isla {
         animal.setPosicion(nuevaFila, nuevaColumna);
         matriz[nuevaFila][nuevaColumna].add(animal);
     }
+    public synchronized void insertPlant(Plant plant, int nuevaFila, int nuevaColumna) {
+        if (nuevaFila < 0 || nuevaFila >= filas || nuevaColumna < 0 || nuevaColumna >= columnas) {
+            return;  // Movimiento fuera de los límites
+        }
+        // Insertar planta en su posición
+
+        matrizPlants[nuevaFila][nuevaColumna].add(plant);
+    }
+
     public synchronized void killAnimal(Animal animal){
         matriz[animal.getFila()][animal.getColumna()].remove(animal);
     }
+    public synchronized void killPlant(Plant plant){
+        matrizPlants[plant.getFila()][plant.getColumna()].remove(plant);
+    }
     public synchronized List<Animal> getAnimalPosition(int fila, int columna) {
         return new ArrayList<>(matriz[fila][columna]);
+    }
+    public synchronized List<Plant> getPlantPosition(int fila, int columna) {
+        return new ArrayList<>(matrizPlants[fila][columna]);
     }
 
     public int getFilas() {
@@ -82,9 +106,13 @@ public class Isla {
         for (Map.Entry<String, Map<String, Integer>> entry : resumen.entrySet()) {
             String especie = entry.getKey();
             Map<String, Integer> generos = entry.getValue();
+            Animal.logger.info("Especie: " + especie+setUnicode(especie));
             System.out.println("Especie: " + especie+setUnicode(especie));
+
             for (Map.Entry<String, Integer> generoEntry : generos.entrySet()) {
+                Animal.logger.info("  " + generoEntry.getKey() + ": " + generoEntry.getValue());
                 System.out.println("  " + generoEntry.getKey() + ": " + generoEntry.getValue());
+
             }
         }
     }

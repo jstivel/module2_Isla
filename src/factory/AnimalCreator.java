@@ -1,11 +1,12 @@
 package factory;
 import around.Isla;
+import factory.plants.Plant;
 
 import java.util.concurrent.ExecutorService;
 
-public class AnimalCreator extends AnimalFactory {
+public class AnimalCreator extends Factory {
     @Override
-    public Animal createAnimal(String type, String name, String gender,Isla isla, ExecutorService executor,AnimalFactory animalFactory) {
+    public Animal createAnimal(String type, String name, String gender, Isla isla, ExecutorService executor, Factory animalFactory) {
         switch (type.toLowerCase()) {
             case "carnivore":
                 return new Carnivore(name,gender,isla,executor,animalFactory);
@@ -14,5 +15,9 @@ public class AnimalCreator extends AnimalFactory {
             default:
                 throw new IllegalArgumentException("Unknown animal type");
         }
+    }
+    @Override
+    public Plant createPlant(String type, Isla isla, ExecutorService executor, Factory plantFactory) {
+        return null; // No aplica para esta fábrica
     }
 }
